@@ -1,0 +1,51 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background: #f4f4f4;
+}
+
+.header {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.alert-card {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.alert-card.critical { border-left: 5px solid #FF6384; }
+.alert-card.warning { border-left: 5px solid #FFCE56; }
+.alert-card.info { border-left: 5px solid #36A2EB; }
+
+.alert-card button {
+    margin: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.snooze-history {
+    margin-top: 20px;
+}
+
+.snooze-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.snooze-history th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.analytics {
+    margin-top: 20px;
+    max-width: 500px;
+}
