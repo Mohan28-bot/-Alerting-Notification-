@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End User Alert Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f4; }
+        .header { background: #007bff; color: white; padding: 10px; border-radius: 5px; }
+        .alert-card { background: white; border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .alert-card.critical { border-left: 5px solid #FF6384; }
+        .alert-card.warning { border-left: 5px solid #FFCE56; }
+        .alert-card.info { border-left: 5px solid #36A2EB; }
+        .alert-card button { margin: 5px; padding: 5px 10px; cursor: pointer; }
+        .snooze-history { margin-top: 20px; }
+        .snooze-history table { width: 100%; border-collapse: collapse; }
+        .snooze-history th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .analytics { margin-top: 20px; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Your Alerts (Bob)</h1>
+    </div>
+    <div class="alerts">
+        <h2>Active Alerts</h2>
+        <div id="alerts-container"></div>
+    </div>
+    <div class="snooze-history">
+        <h2>Snoozed Alerts History</h2>
+        <table>
+            <thead><tr><th>Title</th><th>Snoozed Until</th><th>Severity</th></tr></thead>
+            <tbody id="snooze-table"></tbody>
+        </table>
+    </div>
+    <div class="analytics">
+        <h2>Alert Analytics</h2>
+        <canvas id="severityChart"></canvas>
+    </div>
+
+    <script>
+        // Simulated API response for Bob’s alerts (from demo at 2025-09-26 12:00)
+        const alerts = [
+            {
+                alert: { id: 1, title: "System Outage", message: "Servers down!", severity: "Critical", expiry: "2025-09-28 10:00:00" },
+                pref: { read: false, snoozed_until: null }
+            },
+            {
+                alert: { id: 3, title: "Personal Reminder", message: "Check your email.", severity: "Warning", expiry: "2025-09-28 10:00:00" },
+                pref: { read: false, snoozed_until: null }
+            },
+            {
+                alert: { id: 4, title: "Budget Update", message: "Review Q4 budget.", severity: "Warning", expiry: "2025-09-28 10:00:00" },
+                pref: { read: false, snoozed_until: null }
+            }
+        ];
+
+        // Simulated snooze history
+        const snoozeHistory = [];
+
+        // Simulated analytics (from demo)
+        const analytics = {
+            severity_breakdown: {
+                delivered: { Info: 3, Warning: 6, Critical: 8 },
+                read: { Info: 0, Warning: 0, Critical: 1 }
+            }
+        };
+
+        // Render alerts
+        const alertsContainer = document.getElementById('alerts-container');
+        alerts.forEach(item => {
+            const alert = item.alert;
+            const pref = item.pref;
+            const card = document.createElement('div');
+            card.className = `alert-card ${alert.severity.toLowerCase()}`;
+            card.innerHTML = `
+                <h3>${alert.title} (${alert.severity})</h3>
+                <p>${alert.message}</p>
+                <p>Expires: ${alert.expiry}</p>
+                <p>Status: ${pref.read ? 'Read' : 'Unread'} ${pref.snoozed_until ? `(Snoozed until ${pref.snoozed_until})` : ''}</p>
+                <button onclick="markRead(${alert.id}, ${pref.read})">${pref.read ? 'Mark Unread' : 'Mark Read'}</button>
+                <button onclick="snooze(${alert.id})">${pref.snoozed_until ? 'Unsnooze' : 'Snooze for Today'}</button>
+            `;
+            alertsContainer.appendChild(card);
+        });
+
+        // Render snooze history
+        const snoozeTable = document.getElementById('snooze-table');
+        snoozeHistory.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${item.title}</td><td>${item.snoozed_until}</td><td>${item.severity}</td>`;
+            snoozeTable.appendChild(row);
+        });
+
+        // Simulated API calls
+        function markRead(alertId, isRead) {
+            alert(`Marked alert ${alertId} as ${isRead ? 'unread' : 'read'}`);
+            // In reality: Call system.mark_read(user_id, alertId, !isRead)
+        }
+
+        function snooze(alertId) {
+            alert(`Snoozed alert ${alertId} for today`);
+            // In reality: Call system.snooze_alert(user_id, alertId, current_time)
+        }
+
+        // Render Chart.js chart
+        const ctx = document.getElementById('severityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Info', 'Warning', 'Critical'],
+                datasets: [
+                    {
+                        label: 'Delivered',
+                        data: [
+                            analytics.severity_breakdown.delivered.Info,
+                            analytics.severity_breakdown.delivered.Warning,
+                            analytics.severity_breakdown.delivered.Critical
+                        ],
+                        backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384']
+                    },
+                    {
+                        label: 'Read',
+                        data: [
+                            analytics.severity_breakdown.read.Info,
+                            analytics.severity_breakdown.read.Warning,
+                            analytics.severity_breakdown.read.Critical
+                        ],
+                        backgroundColor: ['#36A2EB80', '#FFCE5680', '#FF638480']
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>
